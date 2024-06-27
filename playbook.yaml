@@ -26,11 +26,9 @@
            'nodelocaldns' in ansible_facts.interfaces or
            'cali'         in ansible_facts.interfaces"
 
-  - name: "More than two interfaces"
-    shell: "ip -o link show | awk '{print $2,$9}'"
-    register: add
-
   - name: "Debug More than two interfaces"
-    debug:
-      msg: "More + {{ ansible_hostname }} + {{ ansible_default_ipv4.address }}"
-    when: add.stdout_lines|length > 2
+    block:
+      - name: Get hostname and ipv4
+        debug:
+          msg: "More + {{ ansible_hostname }} + {{ ansible_default_ipv4.address }}"
+    when: ansible_facts.interfaces|length > 2
