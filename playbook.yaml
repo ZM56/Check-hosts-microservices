@@ -1,0 +1,36 @@
+---
+- hosts: all
+  user: zm
+  become: true
+  tasks:
+  - name: Check the docker interface
+    block:
+      - name: Get hostname and ipv4
+        debug:
+          msg: "Docker + {{ ansible_hostname }} + {{ ansible_default_ipv4.address }}"
+    when: "'docker0' in ansible_facts.interfaces"
+
+  - name: Check the podman interface
+    block:
+      - name: Get hostname and ipv4
+        debug:
+          msg: "Podman + {{ ansible_hostname }} + {{ ansible_default_ipv4.address }}"
+    when: "'podman1' in ansible_facts.interfaces"
+
+  - name: Check the kubernetes interface
+    block:
+      - name: Get hostname and ipv4
+        debug:
+          msg: "Kubernetes + {{ ansible_hostname }} + {{ ansible_default_ipv4.address }}"
+    when: "'tun10'        in ansible_facts.interfaces or
+           'nodelocaldns' in ansible_facts.interfaces or
+           'cali'         in ansible_facts.interfaces"
+
+  - name: "More than two interfaces"
+    shell: "ip -o link show | awk '{print $2,$9}'"
+    register: add
+
+  - name: "Debug More than two interfaces"
+    debug:
+      msg: "More + {{ ansible_hostname }} + {{ ansible_default_ipv4.address }}"
+    when: add.stdout_lines|length > 2
