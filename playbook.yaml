@@ -22,9 +22,7 @@
       - name: Get hostname and ipv4
         debug:
           msg: "Kubernetes + {{ ansible_hostname }} + {{ ansible_default_ipv4.address }}"
-    when: "'tun10'        in ansible_facts.interfaces or
-           'nodelocaldns' in ansible_facts.interfaces or
-           'cali'         in ansible_facts.interfaces"
+    when: "'tunl0' in ansible_facts.interfaces
 
   - name: "Debug More than two interfaces"
     block:
